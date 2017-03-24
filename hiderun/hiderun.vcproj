@@ -184,6 +184,14 @@
 			>
 		</File>
 		<File
+			RelativePath="..\..\MyUtility\Is64.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\MyUtility\Is64.h"
+			>
+		</File>
+		<File
 			RelativePath=".\main.cpp"
 			>
 		</File>
