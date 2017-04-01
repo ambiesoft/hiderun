@@ -1,13 +1,14 @@
 #include <windows.h>
 
-
 #include "../../MyUtility/CreateProcessCommon.h"
 #include "../../MyUtility/Is64.h"
+
 
 #define APPNAME L"hiderun"
 
 #pragma intrinsic(memset)
 #pragma function(memset)
+
 
 void* memset(void* dist, int val, size_t size)
 {
@@ -17,7 +18,30 @@ void* memset(void* dist, int val, size_t size)
 	return dist;
 }
 
+#ifndef _countof
+#define _countof(a) sizeof(a)/sizeof(a[0])
+#endif
 
+LPWSTR myGetLastErrorString(DWORD dwErrorNo)
+{
+	LPVOID lpMsgBuf = NULL;
+ 
+	if( (0==FormatMessageW(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
+		NULL,
+		dwErrorNo,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPWSTR)&lpMsgBuf,
+		0,
+		NULL)) || lpMsgBuf==NULL )
+	{
+		return NULL;
+	}
+ 
+	return (LPWSTR)lpMsgBuf;
+}
 int main()
 {
 	int argc=0;
@@ -52,9 +76,22 @@ int main()
 	}
 
 	int ret=0;
-	if(!CreateProcessCommon(argv[1],NULL, TRUE))//L"C:\\Linkout\\bin\\curr.bat");
+	DWORD dwLE = 0;
+	if(!CreateProcessCommon(argv[1],NULL, TRUE, &dwLE))//L"C:\\Linkout\\bin\\curr.bat");
 	{
-		MessageBox(NULL, L"Failed to launch", APPNAME, MB_ICONEXCLAMATION);
+		LPWSTR p = (LPWSTR)LocalAlloc(0, 1024);
+		p[0]=0;
+		lstrcpy(p, L"Failed to launch: ");
+		lstrcat(p, argv[1]);
+		lstrcat(p, L"\r\n");
+		LPCWSTR q = myGetLastErrorString(dwLE);
+		lstrcat(p,q);
+		MessageBox(NULL, p, APPNAME, MB_ICONEXCLAMATION);
+		// MessageBox(NULL, GetCommandLine(), APPNAME, MB_ICONEXCLAMATION);
+		// MessageBox(NULL, argv[1], APPNAME, MB_ICONEXCLAMATION);
+
+		LocalFree((void*)q);
+		LocalFree(p);
 		ret=1;
 	}
 	LocalFree(argv);
