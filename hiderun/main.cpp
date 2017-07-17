@@ -42,6 +42,58 @@ LPWSTR myGetLastErrorString(DWORD dwErrorNo)
  
 	return (LPWSTR)lpMsgBuf;
 }
+
+static BOOL iss(TCHAR c)
+{
+	return c==L' ' || c==L'\t' || c==L'\r' || c==L'\n';
+}
+
+static LPTSTR getcommandlargine()
+{
+	LPTSTR p = GetCommandLine();
+
+	if (p == NULL)
+		return NULL;
+	if (p[0] == 0)
+		return p;
+
+	TCHAR qc=0;
+	if(p[0]==L'"' || p[0]==L'\'')
+	{
+		qc=p[0];
+		++p;
+	}
+
+	for(; *p ; ++p)
+	{
+		if(qc)
+		{
+			if(*p==qc)
+			{
+				qc=0;
+				continue;
+			}
+			continue;
+		}
+
+		if(iss(*p))
+		{
+			for( ; *p ; ++p)
+			{
+				if(!iss(*p))
+				{
+					int count = lstrlen(p);
+					LPTSTR pRet = (LPTSTR)LocalAlloc(0, (count+1)*sizeof(TCHAR));
+					lstrcpy(pRet,p);
+					return pRet;
+				}
+			}
+			return NULL;
+		}
+	}
+	return NULL;
+}
+
 int main()
 {
 	int argc=0;
@@ -77,7 +129,8 @@ int main()
 
 	int ret=0;
 	DWORD dwLE = 0;
-	if(!CreateProcessCommon(argv[1],NULL, TRUE, &dwLE))//L"C:\\Linkout\\bin\\curr.bat");
+	LPTSTR pArg = getcommandlargine();
+	if(!CreateProcessCommon(pArg ,NULL, TRUE, &dwLE))//L"C:\\Linkout\\bin\\curr.bat");
 	{
 		LPWSTR p = (LPWSTR)LocalAlloc(0, 1024);
 		p[0]=0;
@@ -94,6 +147,7 @@ int main()
 		LocalFree(p);
 		ret=1;
 	}
+	LocalFree(pArg);
 	LocalFree(argv);
 	return (ret);
 }
