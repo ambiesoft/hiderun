@@ -105,6 +105,8 @@ int main()
 		return(1);
 	}
 
+	LPCTSTR pArg = getcommandlargine();
+
 	if (Is64BitWindows() && !Is64BitProcess())
 	{
 		TCHAR szT[MAX_PATH]; szT[0] = 0;
@@ -116,7 +118,7 @@ int main()
 			if (*p == L'\\')
 			{
 				lstrcpy(p+1, L"hiderun64.exe");
-				if (!CreateProcessCommon(szT, argv[1]))
+				if (!CreateProcessCommon(szT, pArg))
 				{
 					MessageBox(NULL, L"Failed to launch hiderun64", APPNAME, MB_ICONEXCLAMATION);
 					return 1;
@@ -129,7 +131,7 @@ int main()
 
 	int ret=0;
 	DWORD dwLE = 0;
-	LPTSTR pArg = getcommandlargine();
+	
 	if(!CreateProcessCommon(pArg ,NULL, TRUE, &dwLE))//L"C:\\Linkout\\bin\\curr.bat");
 	{
 		LPWSTR p = (LPWSTR)LocalAlloc(0, 1024);
@@ -147,7 +149,7 @@ int main()
 		LocalFree(p);
 		ret=1;
 	}
-	LocalFree(pArg);
+	LocalFree((void*)pArg);
 	LocalFree(argv);
 	return (ret);
 }
