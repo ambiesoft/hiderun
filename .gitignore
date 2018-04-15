@@ -1,0 +1,15 @@
+
+# /
+/.vs
+/Debug
+/Release
+/hiderun.ncb
+/hiderun.suo
+/*.plg
+/*.opt
+
+# /hiderun/
+/hiderun/x64
+/hiderun/Debug
+/hiderun/Release
+/hiderun/*.user
