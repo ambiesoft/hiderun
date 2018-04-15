@@ -1,7 +1,7 @@
 #include <windows.h>
 
-#include "../../MyUtility/CreateProcessCommon.h"
-#include "../../MyUtility/Is64.h"
+#include "../../lsMisc/CreateProcessCommon.h"
+#include "../../lsMisc/Is64.h"
 
 
 #define APPNAME L"hiderun"
@@ -9,6 +9,7 @@
 #pragma intrinsic(memset)
 #pragma function(memset)
 
+using namespace Ambiesoft;
 
 void* memset(void* dist, int val, size_t size)
 {
@@ -97,8 +98,9 @@ static LPTSTR getcommandlargine()
 int main()
 {
 	int argc=0;
-	LPWSTR* argv=CommandLineToArgvW(GetCommandLine(), &argc);
-	if(argc<2)
+	LPWSTR* argv = CommandLineToArgvW(GetCommandLine(), &argc);
+
+	if(argc < 2)
 	{
 		MessageBox(NULL, L"No Arguments", APPNAME, MB_ICONEXCLAMATION);
 		LocalFree(argv);
@@ -132,7 +134,13 @@ int main()
 	int ret=0;
 	DWORD dwLE = 0;
 	
-	if(!CreateProcessCommon(pArg ,NULL, TRUE, &dwLE))//L"C:\\Linkout\\bin\\curr.bat");
+	//L"C:\\Linkout\\bin\\curr.bat");
+	if(!CreateProcessCommon(pArg,
+		NULL,
+		TRUE,
+		&dwLE,
+		WaitProcess_InputIdle,
+		10*1000))
 	{
 		LPWSTR p = (LPWSTR)LocalAlloc(0, 1024);
 		p[0]=0;
@@ -149,6 +157,9 @@ int main()
 		LocalFree(p);
 		ret=1;
 	}
+	// additional wait for a starting process to get focus properly
+	Sleep(10*1000);
+
 	LocalFree((void*)pArg);
 	LocalFree(argv);
 	return (ret);

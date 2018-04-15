@@ -176,19 +176,19 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\MyUtility\CreateProcessCommon.cpp"
+			RelativePath="..\..\lsMisc\CreateProcessCommon.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\MyUtility\CreateProcessCommon.h"
+			RelativePath="..\..\lsMisc\CreateProcessCommon.h"
 			>
 		</File>
 		<File
-			RelativePath="..\..\MyUtility\Is64.cpp"
+			RelativePath="..\..\lsMisc\Is64.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\MyUtility\Is64.h"
+			RelativePath="..\..\lsMisc\Is64.h"
 			>
 		</File>
 		<File
