@@ -13,3 +13,8 @@
 /hiderun/Debug
 /hiderun/Release
 /hiderun/*.user
+
+*.sdf
+*.suo
+
+.*~

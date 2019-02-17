@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hiderun", "hiderun\hiderun.vcxproj", "{91C5811C-17A1-4B4E-A3CE-59F7D270A802}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hiderun", "hiderun\hiderun2017.vcxproj", "{91C5811C-17A1-4B4E-A3CE-59F7D270A802}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

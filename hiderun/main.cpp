@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <windows.h>
 
 #include "../../lsMisc/CreateProcessCommon.h"
@@ -6,22 +8,25 @@
 
 #define APPNAME L"hiderun"
 
-#pragma intrinsic(memset)
-#pragma function(memset)
+//#pragma intrinsic(memset)
+//#pragma function(memset)
 
-using namespace Ambiesoft;
 
-void* memset(void* dist, int val, size_t size)
-{
-	BYTE* p = (BYTE*)dist;
-	for(size_t i=0 ; i < size ; ++i, ++p)
-		*p = val;
-	return dist;
-}
+
+//void* memset(void* dist, int val, size_t size)
+//{
+//	BYTE* p = (BYTE*)dist;
+//	for(size_t i=0 ; i < size ; ++i, ++p)
+//		*p = val;
+//	return dist;
+//}
 
 #ifndef _countof
 #define _countof(a) sizeof(a)/sizeof(a[0])
 #endif
+
+using namespace Ambiesoft;
+using namespace std;
 
 LPWSTR myGetLastErrorString(DWORD dwErrorNo)
 {
@@ -95,7 +100,11 @@ static LPTSTR getcommandlargine()
 	return NULL;
 }
 
-int main()
+
+int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPTSTR    lpCmdLine,
+	_In_ int       nCmdShow)
 {
 	int argc=0;
 	LPWSTR* argv = CommandLineToArgvW(GetCommandLine(), &argc);
@@ -107,6 +116,21 @@ int main()
 		return(1);
 	}
 
+	if (argc > 1 && (
+		lstrcmp(argv[1], L"-h") == 0 ||
+		lstrcmp(argv[1], L"/h") == 0 ||
+		lstrcmp(argv[1], L"/?") == 0))
+	{
+		wstring message;
+		message += L"hiderun\n";
+		message += L"Run console application without showing the console";
+		message += L"\n\n";
+		message += L"ex)\n";
+		message += L"hiderun.exe command";
+		MessageBox(NULL, message.c_str(), APPNAME, MB_ICONINFORMATION);
+		return 0;
+	}
+		
 	LPCTSTR pArg = getcommandlargine();
 
 	if (Is64BitWindows() && !Is64BitProcess())
@@ -165,7 +189,3 @@ int main()
 	return (ret);
 }
 
-void entrypoint()
-{
-	ExitProcess(main());
-}
