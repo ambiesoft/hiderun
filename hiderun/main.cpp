@@ -132,7 +132,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 		
 	LPCTSTR pArg = getcommandlargine();
-
+	
 	if (Is64BitWindows() && !Is64BitProcess())
 	{
 		TCHAR szT[MAX_PATH]; szT[0] = 0;
@@ -145,6 +145,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			{
 				lstrcpy(p+1, L"hiderun64.exe");
 				if (!CreateProcessCommon(szT, pArg))
+				// if (!CreateProcessCommon(L"C:\\Linkout\\argCheck\\argCheck.exe", pArg))
 				{
 					MessageBox(NULL, L"Failed to launch hiderun64", APPNAME, MB_ICONEXCLAMATION);
 					return 1;

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\lsMisc\CreateProcessCommon.cpp" />
+    <ClCompile Include="..\..\lsMisc\Is64.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\lsMisc\CreateProcessCommon.h" />
+    <ClInclude Include="..\..\lsMisc\Is64.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="dist">
+      <UniqueIdentifier>{a5a2a5fa-b35b-415a-a287-63f8ced48840}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="history.txt">
+      <Filter>dist</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

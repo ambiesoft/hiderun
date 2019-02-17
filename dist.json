@@ -1,0 +1,33 @@
+{
+    "name": "hiderun",
+    "solution": "hiderun.sln",
+    "targetproject": "hiderun",
+    "configuration": "Release",
+    "targets": [
+        {
+            "platform": "Win32",
+            "outdir": "Release\\v120_xp\\hiderun\\",
+            "setoutdirforbuild": false
+        },
+        {
+            "platform": "x64",
+            "outdir": "Release\\v120_xp\\hiderun\\",
+            "setoutdirforbuild": false
+        }
+    ],
+    "ShouldBeFiles": [
+        "hiderun.exe",
+        "hiderun.pdb",
+        "hiderun64.exe",
+        "hiderun64.pdb",
+        "history.txt"
+    ],
+    "TotalFileCount": "exact",
+    "archivedir": "C:/Linkout/",
+    "remotedir": "http://ambiesoft.fam.cx/ffdav/uploads/hiderun/",
+    "remotesha1": "http://ambiesoft.fam.cx/ffdav/uploads/getSha1.php?file=hiderun/{}",
+    "ShouldNotBeFiles": [],
+    "ShouldBeOneOfThem": [],
+    "obtainverfrom": "history.txt",
+    "obtainverregex": "\\d+\\.\\d+\\.\\d+"
+}
