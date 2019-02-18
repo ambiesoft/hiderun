@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hiderun", "hiderun\hiderun.vcxproj", "{91C5811C-17A1-4B4E-A3CE-59F7D270A802}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hiderun", "hiderun\hiderun.vcxproj", "{4F5EBD29-919F-49BF-BD3E-7B24E9131365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Debug|Win32.ActiveCfg = Debug|Win32
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Debug|Win32.Build.0 = Debug|Win32
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Debug|x64.ActiveCfg = Debug|x64
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Debug|x64.Build.0 = Debug|x64
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Release|Win32.ActiveCfg = Release|Win32
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Release|Win32.Build.0 = Release|Win32
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Release|x64.ActiveCfg = Release|x64
-		{91C5811C-17A1-4B4E-A3CE-59F7D270A802}.Release|x64.Build.0 = Release|x64
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Debug|Win32.Build.0 = Debug|Win32
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Debug|x64.ActiveCfg = Debug|x64
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Debug|x64.Build.0 = Debug|x64
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Release|Win32.ActiveCfg = Release|Win32
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Release|Win32.Build.0 = Release|Win32
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Release|x64.ActiveCfg = Release|x64
+		{4F5EBD29-919F-49BF-BD3E-7B24E9131365}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
