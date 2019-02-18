@@ -1,12 +1,14 @@
 #include "stdafx.h"
 
-#include <windows.h>
+
 
 #include "../../lsMisc/CreateProcessCommon.h"
 #include "../../lsMisc/Is64.h"
+#include "../../lsMisc/CommandLineString.h"
+#include "../../lsMisc/GetLastErrorString.h"
 
 
-#define APPNAME L"hiderun"
+
 
 //#pragma intrinsic(memset)
 //#pragma function(memset)
@@ -28,113 +30,134 @@
 using namespace Ambiesoft;
 using namespace std;
 
-LPWSTR myGetLastErrorString(DWORD dwErrorNo)
+//LPWSTR myGetLastErrorString(DWORD dwErrorNo)
+//{
+//	LPVOID lpMsgBuf = NULL;
+// 
+//	if( (0==FormatMessageW(
+//		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+//		FORMAT_MESSAGE_FROM_SYSTEM |
+//		FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
+//		NULL,
+//		dwErrorNo,
+//		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+//		(LPWSTR)&lpMsgBuf,
+//		0,
+//		NULL)) || lpMsgBuf==NULL )
+//	{
+//		return NULL;
+//	}
+// 
+//	return (LPWSTR)lpMsgBuf;
+//}
+
+//static BOOL iss(TCHAR c)
+//{
+//	return c==L' ' || c==L'\t' || c==L'\r' || c==L'\n';
+//}
+//
+//static LPTSTR getcommandlargine()
+//{
+//	LPTSTR p = GetCommandLine();
+//
+//	if (p == NULL)
+//		return NULL;
+//	if (p[0] == 0)
+//		return p;
+//
+//	TCHAR qc=0;
+//	if(p[0]==L'"' || p[0]==L'\'')
+//	{
+//		qc=p[0];
+//		++p;
+//	}
+//
+//	for(; *p ; ++p)
+//	{
+//		if(qc)
+//		{
+//			if(*p==qc)
+//			{
+//				qc=0;
+//				continue;
+//			}
+//			continue;
+//		}
+//
+//		if(iss(*p))
+//		{
+//			for( ; *p ; ++p)
+//			{
+//				if(!iss(*p))
+//				{
+//					int count = lstrlen(p);
+//					LPTSTR pRet = (LPTSTR)LocalAlloc(0, (count+1)*sizeof(TCHAR));
+//					lstrcpy(pRet,p);
+//					return pRet;
+//				}
+//			}
+//			return NULL;
+//		}
+//	}
+//	return NULL;
+//}
+
+static wstring getHelpString()
 {
-	LPVOID lpMsgBuf = NULL;
- 
-	if( (0==FormatMessageW(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
-		NULL,
-		dwErrorNo,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPWSTR)&lpMsgBuf,
-		0,
-		NULL)) || lpMsgBuf==NULL )
-	{
-		return NULL;
-	}
- 
-	return (LPWSTR)lpMsgBuf;
+	wstring message;
+	message += L"hiderun\n";
+	message += L"Run console application without showing the console";
+	message += L"\n\n";
+	message += L"ex)\n";
+	message += L"hiderun.exe command";
+
+	return message;
 }
-
-static BOOL iss(TCHAR c)
-{
-	return c==L' ' || c==L'\t' || c==L'\r' || c==L'\n';
-}
-
-static LPTSTR getcommandlargine()
-{
-	LPTSTR p = GetCommandLine();
-
-	if (p == NULL)
-		return NULL;
-	if (p[0] == 0)
-		return p;
-
-	TCHAR qc=0;
-	if(p[0]==L'"' || p[0]==L'\'')
-	{
-		qc=p[0];
-		++p;
-	}
-
-	for(; *p ; ++p)
-	{
-		if(qc)
-		{
-			if(*p==qc)
-			{
-				qc=0;
-				continue;
-			}
-			continue;
-		}
-
-		if(iss(*p))
-		{
-			for( ; *p ; ++p)
-			{
-				if(!iss(*p))
-				{
-					int count = lstrlen(p);
-					LPTSTR pRet = (LPTSTR)LocalAlloc(0, (count+1)*sizeof(TCHAR));
-					lstrcpy(pRet,p);
-					return pRet;
-				}
-			}
-			return NULL;
-		}
-	}
-	return NULL;
-}
-
-
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPTSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
 	int argc=0;
-	LPWSTR* argv = CommandLineToArgvW(GetCommandLine(), &argc);
-
+	std::unique_ptr<LPWSTR, HLOCAL(__stdcall *)(HLOCAL)>
+		arg(::CommandLineToArgvW(::GetCommandLine(), &argc), ::LocalFree);
+	
 	if(argc < 2)
 	{
 		MessageBox(NULL, L"No Arguments", APPNAME, MB_ICONEXCLAMATION);
-		LocalFree(argv);
-		return(1);
+		return 1;
 	}
 
-	if (argc > 1 && (
-		lstrcmp(argv[1], L"-h") == 0 ||
-		lstrcmp(argv[1], L"/h") == 0 ||
-		lstrcmp(argv[1], L"/?") == 0))
+	int sleepsec = 0;
+	wstring laucharg;
+	CCommandLineString cmdline(lpCmdLine);
+	for (int i=0; i < cmdline.getCount(); ++i)
 	{
-		wstring message;
-		message += L"hiderun\n";
-		message += L"Run console application without showing the console";
-		message += L"\n\n";
-		message += L"ex)\n";
-		message += L"hiderun.exe command";
-		MessageBox(NULL, message.c_str(), APPNAME, MB_ICONINFORMATION);
-		return 0;
-	}
+		laucharg = cmdline.subString(i);
+		wstring line = cmdline.getArg(i);
+		if (!line.empty() && line[0] != L'/')
+			break;
+
+		if (line == L"/h" || line == L"/?")
+		{
+			MessageBox(NULL, 
+				getHelpString().c_str(), 
+				APPNAME_AND_VERSION,
+				MB_ICONINFORMATION);
+			return 0;
+		}
+		else if (line == L"/sleep")
+		{
+			++i;
+			sleepsec = stoi(cmdline.getArg(i));
+		}
 		
-	LPCTSTR pArg = getcommandlargine();
+	}
+	
 	
 	if (Is64BitWindows() && !Is64BitProcess())
 	{
+		// open with 64 version
 		TCHAR szT[MAX_PATH]; szT[0] = 0;
 		GetModuleFileName(NULL, szT, _countof(szT));
 		size_t len = lstrlen(szT);
@@ -144,7 +167,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			if (*p == L'\\')
 			{
 				lstrcpy(p+1, L"hiderun64.exe");
-				if (!CreateProcessCommon(szT, pArg))
+				if (!CreateProcessCommon(szT, cmdline.subString(0).c_str()))
 				// if (!CreateProcessCommon(L"C:\\Linkout\\argCheck\\argCheck.exe", pArg))
 				{
 					MessageBox(NULL, L"Failed to launch hiderun64", APPNAME, MB_ICONEXCLAMATION);
@@ -160,33 +183,27 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	DWORD dwLE = 0;
 	
 	//L"C:\\Linkout\\bin\\curr.bat");
-	if(!CreateProcessCommon(pArg,
+	if(!CreateProcessCommon(laucharg.c_str(),
 		NULL,
 		TRUE,
 		&dwLE,
 		WaitProcess_InputIdle,
 		10*1000))
 	{
-		LPWSTR p = (LPWSTR)LocalAlloc(0, 1024);
-		p[0]=0;
-		lstrcpy(p, L"Failed to launch: ");
-		lstrcat(p, argv[1]);
-		lstrcat(p, L"\r\n");
-		LPCWSTR q = myGetLastErrorString(dwLE);
-		lstrcat(p,q);
-		MessageBox(NULL, p, APPNAME, MB_ICONEXCLAMATION);
-		// MessageBox(NULL, GetCommandLine(), APPNAME, MB_ICONEXCLAMATION);
-		// MessageBox(NULL, argv[1], APPNAME, MB_ICONEXCLAMATION);
+		wstring message;
+		message += L"Failed to launch: \r\n";
+		message += laucharg.c_str();
+		message += L"\r\n\r\n";
+		message += GetLastErrorString(dwLE);
+		
+		MessageBox(NULL, message.c_str(), APPNAME, MB_ICONEXCLAMATION);
 
-		LocalFree((void*)q);
-		LocalFree(p);
-		ret=1;
+		return 1;
 	}
-	// additional wait for a starting process to get focus properly
-	Sleep(10*1000);
+	
+	if (sleepsec > 0)
+		Sleep(sleepsec * 1000);
 
-	LocalFree((void*)pArg);
-	LocalFree(argv);
 	return (ret);
 }
 

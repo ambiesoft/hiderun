@@ -15,6 +15,7 @@
 /hiderun/*.user
 
 *.sdf
+*.opensdf
 *.suo
 
 .*~
