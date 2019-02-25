@@ -102,11 +102,13 @@ using namespace std;
 //	return NULL;
 //}
 
+
+
 static wstring getHelpString()
 {
 	wstring message;
 	message += L"hiderun\n";
-	message += L"Run console application without showing the console";
+	message += I18N(L"Run console application without showing the console");
 	message += L"\n\n";
 	message += L"ex)\n";
 	message += L"hiderun.exe command";
@@ -124,7 +126,10 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	
 	if(argc < 2)
 	{
-		MessageBox(NULL, L"No Arguments", APPNAME, MB_ICONEXCLAMATION);
+		MessageBox(NULL, 
+			(I18N(L"No Arguments") + (L"\r\n\r\n" + getHelpString())).c_str(),
+			APPNAME,
+			MB_ICONEXCLAMATION);
 		return 1;
 	}
 
@@ -170,7 +175,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 				if (!CreateProcessCommon(szT, cmdline.subString(0).c_str()))
 				// if (!CreateProcessCommon(L"C:\\Linkout\\argCheck\\argCheck.exe", pArg))
 				{
-					MessageBox(NULL, L"Failed to launch hiderun64", APPNAME, MB_ICONEXCLAMATION);
+					MessageBox(NULL, I18N(L"Failed to launch hiderun64"), APPNAME, MB_ICONEXCLAMATION);
 					return 1;
 				}
 				return 0;
