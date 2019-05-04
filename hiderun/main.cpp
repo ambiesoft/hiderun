@@ -136,7 +136,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	int sleepsec = 0;
 	wstring laucharg;
 	CCommandLineString cmdline(lpCmdLine);
-	for (int i=0; i < cmdline.getCount(); ++i)
+	for (size_t i=0; i < cmdline.getCount(); ++i)
 	{
 		laucharg = cmdline.subString(i);
 		wstring line = cmdline.getArg(i);
@@ -160,29 +160,29 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 	
 	
-	if (Is64BitWindows() && !Is64BitProcess())
-	{
-		// open with 64 version
-		TCHAR szT[MAX_PATH]; szT[0] = 0;
-		GetModuleFileName(NULL, szT, _countof(szT));
-		size_t len = lstrlen(szT);
-		LPWSTR p = &szT[len] - 1;
-		for (; p != szT; --p)
-		{
-			if (*p == L'\\')
-			{
-				lstrcpy(p+1, L"hiderun64.exe");
-				if (!CreateProcessCommon(szT, cmdline.subString(0).c_str()))
-				// if (!CreateProcessCommon(L"C:\\Linkout\\argCheck\\argCheck.exe", pArg))
-				{
-					MessageBox(NULL, I18N(L"Failed to launch hiderun64"), APPNAME, MB_ICONEXCLAMATION);
-					return 1;
-				}
-				return 0;
-			}
-		}
-		return 1;
-	}
+	//if (Is64BitWindows() && !Is64BitProcess())
+	//{
+	//	// open with 64 version
+	//	TCHAR szT[MAX_PATH]; szT[0] = 0;
+	//	GetModuleFileName(NULL, szT, _countof(szT));
+	//	size_t len = lstrlen(szT);
+	//	LPWSTR p = &szT[len] - 1;
+	//	for (; p != szT; --p)
+	//	{
+	//		if (*p == L'\\')
+	//		{
+	//			lstrcpy(p+1, L"hiderun64.exe");
+	//			if (!CreateProcessCommon(szT, cmdline.subString(0).c_str()))
+	//			// if (!CreateProcessCommon(L"C:\\Linkout\\argCheck\\argCheck.exe", pArg))
+	//			{
+	//				MessageBox(NULL, I18N(L"Failed to launch hiderun64"), APPNAME, MB_ICONEXCLAMATION);
+	//				return 1;
+	//			}
+	//			return 0;
+	//		}
+	//	}
+	//	return 1;
+	//}
 
 	int ret=0;
 	DWORD dwLE = 0;

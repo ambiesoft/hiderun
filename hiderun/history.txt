@@ -1,4 +1,10 @@
-﻿2019/02/19 ver1.0.4
+﻿2019/05/04 ver1.0.6
+No launch 64bit from 32bit
+
+2019/05/04 ver1.0.5
+distribute runtime
+
+2019/02/19 ver1.0.4
 build test
 
 2019/02/19 ver1.0.3

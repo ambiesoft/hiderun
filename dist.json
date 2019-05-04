@@ -3,24 +3,27 @@
     "solution": "hiderun.sln",
     "targetproject": "hiderun",
     "configuration": "Release",
+    
     "targets": [
         {
             "platform": "Win32",
-            "outdir": "Release\\v120_xp\\hiderun\\",
+            "outdir": "Release\\v120_xp\\hiderun\\x86\\",
             "setoutdirforbuild": false
         },
         {
             "platform": "x64",
-            "outdir": "Release\\v120_xp\\hiderun\\",
+            "outdir": "Release\\v120_xp\\hiderun\\x64\\",
             "setoutdirforbuild": false
         }
     ],
+    "archivingdir": "Release\\v120_xp\\hiderun",
     "ShouldBeFiles": [
         "hiderun.exe",
         "hiderun.pdb",
-        "hiderun64.exe",
-        "hiderun64.pdb",
-        "history.txt"
+        "history.txt",
+        "msvcp120.dll",
+        "msvcr120.dll",
+        "vccorlib120.dll"
     ],
     "TotalFileCount": "exact",
     "archivedir": "C:/Linkout/",

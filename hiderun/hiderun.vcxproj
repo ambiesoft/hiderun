@@ -68,25 +68,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\$(PlatformTarget)\</OutDir>
     <IntDir>$(Configuration)\$(PlatformToolset)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\$(PlatformTarget)\</OutDir>
     <IntDir>$(Configuration)\$(PlatformToolset)\$(Platform)\</IntDir>
-    <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\$(PlatformTarget)\</OutDir>
     <IntDir>$(Configuration)\$(PlatformToolset)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\$(PlatformToolset)\hiderun\$(PlatformTarget)\</OutDir>
     <IntDir>$(Configuration)\$(PlatformToolset)\$(Platform)\</IntDir>
-    <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -100,7 +98,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"</Command>
+      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"
+
+echo C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -115,7 +117,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"</Command>
+      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"
+
+echo C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -134,7 +140,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"</Command>
+      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"
+
+echo C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -153,7 +163,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"</Command>
+      <Command>copy "$(ProjectDir)history.txt" "$(OutDir)"
+
+echo C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+C:\LegacyPrograms\FFC\FFC.exe /t12 "$(VCInstallDir)redist\$(PlatformTarget)\Microsoft.VC120.CRT\*" /to:"$(OutDir)"
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
