@@ -1,27 +1,9 @@
 #include "stdafx.h"
 
-
-
 #include "../../lsMisc/CreateProcessCommon.h"
 #include "../../lsMisc/Is64.h"
 #include "../../lsMisc/CommandLineString.h"
 #include "../../lsMisc/GetLastErrorString.h"
-
-
-
-
-//#pragma intrinsic(memset)
-//#pragma function(memset)
-
-
-
-//void* memset(void* dist, int val, size_t size)
-//{
-//	BYTE* p = (BYTE*)dist;
-//	for(size_t i=0 ; i < size ; ++i, ++p)
-//		*p = val;
-//	return dist;
-//}
 
 #ifndef _countof
 #define _countof(a) sizeof(a)/sizeof(a[0])
@@ -29,80 +11,6 @@
 
 using namespace Ambiesoft;
 using namespace std;
-
-//LPWSTR myGetLastErrorString(DWORD dwErrorNo)
-//{
-//	LPVOID lpMsgBuf = NULL;
-// 
-//	if( (0==FormatMessageW(
-//		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-//		FORMAT_MESSAGE_FROM_SYSTEM |
-//		FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
-//		NULL,
-//		dwErrorNo,
-//		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-//		(LPWSTR)&lpMsgBuf,
-//		0,
-//		NULL)) || lpMsgBuf==NULL )
-//	{
-//		return NULL;
-//	}
-// 
-//	return (LPWSTR)lpMsgBuf;
-//}
-
-//static BOOL iss(TCHAR c)
-//{
-//	return c==L' ' || c==L'\t' || c==L'\r' || c==L'\n';
-//}
-//
-//static LPTSTR getcommandlargine()
-//{
-//	LPTSTR p = GetCommandLine();
-//
-//	if (p == NULL)
-//		return NULL;
-//	if (p[0] == 0)
-//		return p;
-//
-//	TCHAR qc=0;
-//	if(p[0]==L'"' || p[0]==L'\'')
-//	{
-//		qc=p[0];
-//		++p;
-//	}
-//
-//	for(; *p ; ++p)
-//	{
-//		if(qc)
-//		{
-//			if(*p==qc)
-//			{
-//				qc=0;
-//				continue;
-//			}
-//			continue;
-//		}
-//
-//		if(iss(*p))
-//		{
-//			for( ; *p ; ++p)
-//			{
-//				if(!iss(*p))
-//				{
-//					int count = lstrlen(p);
-//					LPTSTR pRet = (LPTSTR)LocalAlloc(0, (count+1)*sizeof(TCHAR));
-//					lstrcpy(pRet,p);
-//					return pRet;
-//				}
-//			}
-//			return NULL;
-//		}
-//	}
-//	return NULL;
-//}
-
-
 
 static wstring getHelpString()
 {
@@ -115,6 +23,133 @@ static wstring getHelpString()
 
 	return message;
 }
+
+bool ReadFileBytes(HANDLE hFile, LPVOID lpBuffer, DWORD dwSize)
+{
+	DWORD dwBytes = 0;
+
+	if (!ReadFile(hFile, lpBuffer, dwSize, &dwBytes, NULL)) {
+		// TRACE(_T("Failed to read file!\n"));
+		return (false);
+	}
+
+	if (dwSize != dwBytes) {
+		// TRACE(_T("Wrong number of bytes read, expected\n"), dwSize, dwBytes);
+		return (false);
+	}
+
+	return (true);
+}
+int GetSubsystemFromImage(LPCWSTR m_stFilePath)
+{
+	HANDLE hImage;
+	DWORD dwCoffHeaderOffset;
+	DWORD dwNewOffset;
+	DWORD dwMoreDosHeader[16];
+	ULONG ulNTSignature;
+
+	IMAGE_DOS_HEADER dos_header;
+	IMAGE_FILE_HEADER file_header;
+	IMAGE_OPTIONAL_HEADER optional_header;
+
+	// Open the application file.
+
+	hImage = CreateFile(m_stFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (hImage == INVALID_HANDLE_VALUE) {
+		// AfxMessageBox(_T("Failed to open the aplication file!\n"));
+		return -1;
+	}
+
+	// Read MS-Dos image header.
+
+	if (!ReadFileBytes(hImage, &dos_header, sizeof(IMAGE_DOS_HEADER))) {
+		// AfxMessageBox(_T("Failed to read file!\n"));
+		return -1;
+	}
+
+	if (dos_header.e_magic != IMAGE_DOS_SIGNATURE) {
+		// AfxMessageBox(_T("Application failed to classify the file type!\n"));
+		return -1;
+	}
+
+	// Read more MS-Dos header.
+
+	if (!ReadFileBytes(hImage, dwMoreDosHeader, sizeof(dwMoreDosHeader))) {
+		// AfxMessageBox(_T("Failed to read file!\n"));
+		return -1;
+	}
+
+	// Move the file pointer to get the actual COFF header.
+
+	dwNewOffset = SetFilePointer(hImage, dos_header.e_lfanew, NULL, FILE_BEGIN);
+	dwCoffHeaderOffset = dwNewOffset + sizeof(ULONG);
+
+	if (dwCoffHeaderOffset == 0xFFFFFFFF) {
+		// AfxMessageBox(_T("Failed to move file pointer!\n"));
+		return -1;
+	}
+
+	// Read NT signature of the file.
+	if (!ReadFileBytes(hImage, &ulNTSignature, sizeof(ULONG))) {
+		// AfxMessageBox(_T("Failed to read NT signature of file!\n"));
+		return -1;
+	}
+
+	if (ulNTSignature != IMAGE_NT_SIGNATURE) {
+		// AfxMessageBox(_T("Missing NT signature!\n"));
+		return -1;
+	}
+
+	if (!ReadFileBytes(hImage, &file_header, IMAGE_SIZEOF_FILE_HEADER)) {
+		// AfxMessageBox(_T("Failed to read file!\n"));
+		return -1;
+	}
+
+	// Read the optional header of file.
+#define IMAGE_SIZEOF_NT_OPTIONAL32_HEADER    224
+#define IMAGE_SIZEOF_NT_OPTIONAL64_HEADER    240
+
+#ifdef _WIN64
+#define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL64_HEADER
+#else
+#define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL32_HEADER
+#endif
+
+	if (!ReadFileBytes(hImage, &optional_header, IMAGE_SIZEOF_NT_OPTIONAL_HEADER)) {
+		// AfxMessageBox(_T("Failed to read file for optional header!\n"));
+		return -1;
+	}
+
+	return optional_header.Subsystem;
+	//case IMAGE_SUBSYSTEM_UNKNOWN:
+	//	m_stAppType = _T("Unknown");
+	//	break;
+	//case IMAGE_SUBSYSTEM_NATIVE:
+	//	m_stAppType = _T("Native");
+	//	break;
+	//case IMAGE_SUBSYSTEM_WINDOWS_GUI:
+	//	m_stAppType = _T("Windows GUI");
+	//	break;
+	//case IMAGE_SUBSYSTEM_WINDOWS_CUI:
+	//	m_stAppType = _T("Windows Console");
+	//	break;
+	//case IMAGE_SUBSYSTEM_OS2_CUI:
+	//	m_stAppType = _T("OS//2 Console");
+	//	break;
+	//case IMAGE_SUBSYSTEM_POSIX_CUI:
+	//	m_stAppType = _T("Posix Console");
+	//	break;
+	//case IMAGE_SUBSYSTEM_NATIVE_WINDOWS:
+	//	m_stAppType = _T("Native Win9x");
+	//	break;
+	//case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
+	//	m_stAppType = _T("Windows CE GUI");
+	//	break;
+	//}
+}
+
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPTSTR    lpCmdLine,
@@ -156,38 +191,14 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			++i;
 			sleepsec = stoi(cmdline.getArg(i));
 		}
-		
 	}
 	
-	
-	//if (Is64BitWindows() && !Is64BitProcess())
-	//{
-	//	// open with 64 version
-	//	TCHAR szT[MAX_PATH]; szT[0] = 0;
-	//	GetModuleFileName(NULL, szT, _countof(szT));
-	//	size_t len = lstrlen(szT);
-	//	LPWSTR p = &szT[len] - 1;
-	//	for (; p != szT; --p)
-	//	{
-	//		if (*p == L'\\')
-	//		{
-	//			lstrcpy(p+1, L"hiderun64.exe");
-	//			if (!CreateProcessCommon(szT, cmdline.subString(0).c_str()))
-	//			// if (!CreateProcessCommon(L"C:\\Linkout\\argCheck\\argCheck.exe", pArg))
-	//			{
-	//				MessageBox(NULL, I18N(L"Failed to launch hiderun64"), APPNAME, MB_ICONEXCLAMATION);
-	//				return 1;
-	//			}
-	//			return 0;
-	//		}
-	//	}
-	//	return 1;
-	//}
+	// check subsystem
+	// TODO: check
+	GetSubsystemFromImage(laucharg.c_str());
 
 	int ret=0;
 	DWORD dwLE = 0;
-	
-	//L"C:\\Linkout\\bin\\curr.bat");
 	if(!CreateProcessCommon(laucharg.c_str(),
 		NULL,
 		TRUE,
