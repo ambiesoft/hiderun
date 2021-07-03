@@ -1,4 +1,7 @@
-﻿2021/07/03 ver1.0.7
+﻿2021/07/03 ver1.0.8
+Add icon and resource version
+
+2021/07/03 ver1.0.7
 if exe is gui, show warning
 
 2019/05/04 ver1.0.6

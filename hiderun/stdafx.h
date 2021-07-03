@@ -6,7 +6,7 @@
 #include <functional>
 
 #define APPNAME_ "hiderun"
-#define APPVERSION_ "1.0.7"
+#define APPVERSION_ "1.0.8"
 
 #define TO_LSTRINNER(x) L ## x
 #define TO_LSTR(x) TO_LSTRINNER(x)
