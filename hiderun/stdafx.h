@@ -6,13 +6,13 @@
 #include <functional>
 
 #define APPNAME_ "hiderun"
-#define APPVERSION_ "1.0.6"
+#define APPVERSION_ "1.0.7"
 
-#define TO_STR2(x) L ## x
-#define TO_STR(x) TO_STR2(x)
+#define TO_LSTRINNER(x) L ## x
+#define TO_LSTR(x) TO_LSTRINNER(x)
 
-#define APPNAME TO_STR(APPNAME_)
-#define APPVERSION TO_STR(APPVERSION_)
-#define APPNAME_AND_VERSION (TO_STR(APPNAME_) TO_STR(" ver ") TO_STR(APPVERSION_))
+#define APPNAME TO_LSTR(APPNAME_)
+#define APPVERSION TO_LSTR(APPVERSION_)
+#define APPNAME_AND_VERSION (TO_LSTR(APPNAME_) TO_LSTR(" v") TO_LSTR(APPVERSION_))
 
 #define I18N(s) (s)

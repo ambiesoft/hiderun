@@ -1,4 +1,7 @@
-﻿2019/05/04 ver1.0.6
+﻿2021/07/03 ver1.0.7
+if exe is gui, show warning
+
+2019/05/04 ver1.0.6
 No launch 64bit from 32bit
 
 2019/05/04 ver1.0.5

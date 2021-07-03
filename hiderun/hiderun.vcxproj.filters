@@ -38,6 +38,12 @@
     <ClCompile Include="..\..\lsMisc\Is64.cpp">
       <Filter>02 Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lsMisc\stdosd\stdosd.cpp">
+      <Filter>02 Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\stdosd\stdosd_win.cpp">
+      <Filter>02 Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -53,6 +59,15 @@
       <Filter>01 Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\lsMisc\Is64.h">
+      <Filter>01 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lsMisc\stdosd\stdosd.h">
+      <Filter>01 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lsMisc\stdosd\stdosd_literal.h">
+      <Filter>01 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lsMisc\CHandle.h">
       <Filter>01 Header Files</Filter>
     </ClInclude>
   </ItemGroup>

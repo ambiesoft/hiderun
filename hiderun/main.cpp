@@ -4,12 +4,15 @@
 #include "../../lsMisc/Is64.h"
 #include "../../lsMisc/CommandLineString.h"
 #include "../../lsMisc/GetLastErrorString.h"
+#include "../../lsMisc/stdosd/stdosd.h"
+#include "../../lsMisc/CHandle.h"
 
 #ifndef _countof
 #define _countof(a) sizeof(a)/sizeof(a[0])
 #endif
 
 using namespace Ambiesoft;
+using namespace Ambiesoft::stdosd;
 using namespace std;
 
 static wstring getHelpString()
@@ -19,7 +22,7 @@ static wstring getHelpString()
 	message += I18N(L"Run console application without showing the console");
 	message += L"\n\n";
 	message += L"ex)\n";
-	message += L"hiderun.exe command";
+	message += L"hiderun.exe [/h|/?] [/v] command [args...]";
 
 	return message;
 }
@@ -40,9 +43,107 @@ bool ReadFileBytes(HANDLE hFile, LPVOID lpBuffer, DWORD dwSize)
 
 	return (true);
 }
-int GetSubsystemFromImage(LPCWSTR m_stFilePath)
+
+//wstring GetLaunchingPath(LPCWSTR pPath)
+//{
+//	if (stdFileExists(pPath))
+//		return pPath;
+//
+//	wchar_t path[MAX_PATH];
+//	vector<wstring> tries;
+//	wstring ext = stdGetFileExtension(pPath);
+//	if(ext==L".com" || ext==L".exe")
+//	{
+//		tries.push_back(pPath);
+//	}
+//	else
+//	{
+//		tries.push_back(pPath);
+//		tries.push_back(pPath + wstring(L".com"));
+//		tries.push_back(pPath + wstring(L".exe"));
+//	}
+//
+//	CHModule hm(NULL);
+//	for (auto&& path : tries)
+//	{
+//		HMODULE h = LoadLibraryEx(path.c_str(), NULL,
+//			DONT_RESOLVE_DLL_REFERENCES // LOAD_LIBRARY_AS_DATAFILE makes GetModuleFileName fail
+//			);
+//		if (h)
+//		{
+//			hm = h;
+//			break;
+//		}
+//	}
+//	if (!hm)
+//		return wstring();
+//
+//	//if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+//	//	GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+//	//	(LPCSTR)&functionInThisDll, &hm) == 0)
+//	//{
+//	//	int ret = GetLastError();
+//	//	fprintf(stderr, "GetModuleHandle failed, error = %d\n", ret);
+//	//	// Return or however you want to handle an error.
+//	//}
+//	if (GetModuleFileName(hm, path, sizeof(path)) == 0)
+//	{
+//		// int ret = GetLastError();
+//		// fprintf(stderr, "GetModuleFileName failed, error = %d\n", ret);
+//		// Return or however you want to handle an error.
+//		return wstring();
+//	}
+//	return path;
+//}
+
+vector<wstring> GetTryPaths(LPCWSTR pFilePath)
 {
-	HANDLE hImage;
+	vector<wstring> tries;
+	wstring ext = stdGetFileExtension(pFilePath);
+	if (ext == L".com" || ext == L".exe" || ext == L".bat")
+	{
+		tries.push_back(pFilePath);
+	}
+	else
+	{
+		tries.push_back(pFilePath);
+		tries.push_back(pFilePath + wstring(L".com"));
+		tries.push_back(pFilePath + wstring(L".exe"));
+		tries.push_back(pFilePath + wstring(L".bat"));
+	}
+	return tries;
+}
+
+
+int GetSubsystemFromImage(LPCWSTR pFilePath)
+{
+	wstring realPath;
+	if (stdFileExists(pFilePath))
+		realPath = pFilePath;
+	else if(stdIsFullPath(pFilePath))
+	{
+		for (auto&& path : GetTryPaths(pFilePath))
+		{
+			if (stdFileExists(path.c_str()))
+			{
+				realPath = path;
+				break;
+			}
+		}
+	}
+	else
+	{
+		for (auto&& path : GetTryPaths(pFilePath))
+		{
+			realPath = stdGetFullPathExecutable(path);
+			if (!realPath.empty())
+				break;
+		}
+	}
+	if (realPath.empty())
+		realPath = pFilePath;
+
+	CHandle file;
 	DWORD dwCoffHeaderOffset;
 	DWORD dwNewOffset;
 	DWORD dwMoreDosHeader[16];
@@ -52,19 +153,23 @@ int GetSubsystemFromImage(LPCWSTR m_stFilePath)
 	IMAGE_FILE_HEADER file_header;
 	IMAGE_OPTIONAL_HEADER optional_header;
 
+	static_assert(offsetof(IMAGE_OPTIONAL_HEADER32, Subsystem) == offsetof(IMAGE_OPTIONAL_HEADER64, Subsystem),
+		"Subsystem offset must be equal");
+	
+
 	// Open the application file.
 
-	hImage = CreateFile(m_stFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+	file = CreateFile(realPath.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL, NULL);
 
-	if (hImage == INVALID_HANDLE_VALUE) {
+	if (!file) {
 		// AfxMessageBox(_T("Failed to open the aplication file!\n"));
 		return -1;
 	}
 
 	// Read MS-Dos image header.
 
-	if (!ReadFileBytes(hImage, &dos_header, sizeof(IMAGE_DOS_HEADER))) {
+	if (!ReadFileBytes(file, &dos_header, sizeof(IMAGE_DOS_HEADER))) {
 		// AfxMessageBox(_T("Failed to read file!\n"));
 		return -1;
 	}
@@ -76,14 +181,14 @@ int GetSubsystemFromImage(LPCWSTR m_stFilePath)
 
 	// Read more MS-Dos header.
 
-	if (!ReadFileBytes(hImage, dwMoreDosHeader, sizeof(dwMoreDosHeader))) {
+	if (!ReadFileBytes(file, dwMoreDosHeader, sizeof(dwMoreDosHeader))) {
 		// AfxMessageBox(_T("Failed to read file!\n"));
 		return -1;
 	}
 
 	// Move the file pointer to get the actual COFF header.
 
-	dwNewOffset = SetFilePointer(hImage, dos_header.e_lfanew, NULL, FILE_BEGIN);
+	dwNewOffset = SetFilePointer(file, dos_header.e_lfanew, NULL, FILE_BEGIN);
 	dwCoffHeaderOffset = dwNewOffset + sizeof(ULONG);
 
 	if (dwCoffHeaderOffset == 0xFFFFFFFF) {
@@ -92,7 +197,7 @@ int GetSubsystemFromImage(LPCWSTR m_stFilePath)
 	}
 
 	// Read NT signature of the file.
-	if (!ReadFileBytes(hImage, &ulNTSignature, sizeof(ULONG))) {
+	if (!ReadFileBytes(file, &ulNTSignature, sizeof(ULONG))) {
 		// AfxMessageBox(_T("Failed to read NT signature of file!\n"));
 		return -1;
 	}
@@ -102,7 +207,7 @@ int GetSubsystemFromImage(LPCWSTR m_stFilePath)
 		return -1;
 	}
 
-	if (!ReadFileBytes(hImage, &file_header, IMAGE_SIZEOF_FILE_HEADER)) {
+	if (!ReadFileBytes(file, &file_header, IMAGE_SIZEOF_FILE_HEADER)) {
 		// AfxMessageBox(_T("Failed to read file!\n"));
 		return -1;
 	}
@@ -111,43 +216,23 @@ int GetSubsystemFromImage(LPCWSTR m_stFilePath)
 #define IMAGE_SIZEOF_NT_OPTIONAL32_HEADER    224
 #define IMAGE_SIZEOF_NT_OPTIONAL64_HEADER    240
 
-#ifdef _WIN64
-#define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL64_HEADER
-#else
-#define IMAGE_SIZEOF_NT_OPTIONAL_HEADER IMAGE_SIZEOF_NT_OPTIONAL32_HEADER
-#endif
+	int IMAGE_SIZEOF_NT_OPTIONAL_HEADER;
+	if (file_header.Machine == IMAGE_FILE_MACHINE_I386)
+		IMAGE_SIZEOF_NT_OPTIONAL_HEADER = IMAGE_SIZEOF_NT_OPTIONAL32_HEADER;
+	else
+		IMAGE_SIZEOF_NT_OPTIONAL_HEADER = IMAGE_SIZEOF_NT_OPTIONAL64_HEADER;
 
-	if (!ReadFileBytes(hImage, &optional_header, IMAGE_SIZEOF_NT_OPTIONAL_HEADER)) {
+	if (!ReadFileBytes(file, &optional_header, IMAGE_SIZEOF_NT_OPTIONAL_HEADER)) {
 		// AfxMessageBox(_T("Failed to read file for optional header!\n"));
 		return -1;
 	}
 
 	return optional_header.Subsystem;
-	//case IMAGE_SUBSYSTEM_UNKNOWN:
-	//	m_stAppType = _T("Unknown");
-	//	break;
-	//case IMAGE_SUBSYSTEM_NATIVE:
-	//	m_stAppType = _T("Native");
-	//	break;
-	//case IMAGE_SUBSYSTEM_WINDOWS_GUI:
-	//	m_stAppType = _T("Windows GUI");
-	//	break;
-	//case IMAGE_SUBSYSTEM_WINDOWS_CUI:
-	//	m_stAppType = _T("Windows Console");
-	//	break;
-	//case IMAGE_SUBSYSTEM_OS2_CUI:
-	//	m_stAppType = _T("OS//2 Console");
-	//	break;
-	//case IMAGE_SUBSYSTEM_POSIX_CUI:
-	//	m_stAppType = _T("Posix Console");
-	//	break;
-	//case IMAGE_SUBSYSTEM_NATIVE_WINDOWS:
-	//	m_stAppType = _T("Native Win9x");
-	//	break;
-	//case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
-	//	m_stAppType = _T("Windows CE GUI");
-	//	break;
-	//}
+}
+
+bool isOption(const wstring& option)
+{
+	return !option.empty() && option[0] == L'/';
 }
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
@@ -155,6 +240,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPTSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
+
+
 	int argc=0;
 	std::unique_ptr<LPWSTR, HLOCAL(__stdcall *)(HLOCAL)>
 		arg(::CommandLineToArgvW(::GetCommandLine(), &argc), ::LocalFree);
@@ -171,35 +258,73 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	int sleepsec = 0;
 	wstring laucharg;
 	CCommandLineString cmdline(lpCmdLine);
-	for (size_t i=0; i < cmdline.getCount(); ++i)
+	size_t startIndexOfTarget = 0;
+	for (; startIndexOfTarget < cmdline.getCount(); ++startIndexOfTarget)
 	{
-		laucharg = cmdline.subString(i);
-		wstring line = cmdline.getArg(i);
-		if (!line.empty() && line[0] != L'/')
+		wstring line = cmdline.getArg(startIndexOfTarget);
+		if (!isOption(line))
 			break;
 
 		if (line == L"/h" || line == L"/?")
 		{
-			MessageBox(NULL, 
-				getHelpString().c_str(), 
+			MessageBox(NULL,
+				getHelpString().c_str(),
 				APPNAME_AND_VERSION,
 				MB_ICONINFORMATION);
 			return 0;
 		}
 		else if (line == L"/sleep")
 		{
-			++i;
-			sleepsec = stoi(cmdline.getArg(i));
+			++startIndexOfTarget;
+			sleepsec = stoi(cmdline.getArg(startIndexOfTarget));
+		}
+		else
+		{
+			MessageBox(NULL,
+				stdFormat(I18N(L"Unknown option:%s"), line.c_str()).c_str(),
+				APPNAME,
+				MB_ICONERROR);
+			return -1;
 		}
 	}
-	
-	// check subsystem
-	// TODO: check
-	GetSubsystemFromImage(laucharg.c_str());
+
+	const wstring exe = cmdline.getArg(startIndexOfTarget);
+	const wstring args = cmdline.subString(startIndexOfTarget + 1);
+	vector<wstring> v = { exe };
+	const wstring tartgetCommandLine = CCommandLineString::getCommandLine(v) + L" " + args;
+	bool isGui = false;
+	switch (GetSubsystemFromImage(exe.c_str()))
+	{
+		case IMAGE_SUBSYSTEM_UNKNOWN:
+			break;
+		case IMAGE_SUBSYSTEM_NATIVE:
+			break;
+		case IMAGE_SUBSYSTEM_WINDOWS_GUI:
+			isGui = true;
+			break;
+		case IMAGE_SUBSYSTEM_WINDOWS_CUI:
+			break;
+		case IMAGE_SUBSYSTEM_OS2_CUI:
+			break;
+		case IMAGE_SUBSYSTEM_POSIX_CUI:
+			break;
+		case IMAGE_SUBSYSTEM_NATIVE_WINDOWS:
+			break;
+		case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
+			isGui = true;
+			break;
+	}
+	if (isGui)
+	{
+		wstring message = stdFormat(I18N(L"'%s' is GUI. Are you sure to continue?"),
+			exe.c_str());
+		if (IDYES != MessageBox(NULL, message.c_str(), APPNAME, MB_ICONWARNING | MB_YESNO | MB_DEFBUTTON2))
+			return 1;
+	}
 
 	int ret=0;
 	DWORD dwLE = 0;
-	if(!CreateProcessCommon(laucharg.c_str(),
+	if(!CreateProcessCommon(tartgetCommandLine.c_str(),
 		NULL,
 		TRUE,
 		&dwLE,
