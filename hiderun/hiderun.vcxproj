@@ -198,7 +198,14 @@
     <ClInclude Include="..\..\lsMisc\Is64.h" />
     <ClInclude Include="..\..\lsMisc\stdosd\stdosd.h" />
     <ClInclude Include="..\..\lsMisc\stdosd\stdosd_literal.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hiderun.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

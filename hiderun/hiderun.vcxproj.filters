@@ -70,5 +70,18 @@
     <ClInclude Include="..\..\lsMisc\CHandle.h">
       <Filter>01 Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>01 Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hiderun.rc">
+      <Filter>03 Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico">
+      <Filter>03 Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
