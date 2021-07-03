@@ -7,28 +7,25 @@
     "targets": [
         {
             "platform": "Win32",
-            "outdir": "Release\\v120_xp\\hiderun\\x86\\",
+            "outdir": "Release\\v142\\hiderun\\x86\\",
             "setoutdirforbuild": false
         },
         {
             "platform": "x64",
-            "outdir": "Release\\v120_xp\\hiderun\\x64\\",
+            "outdir": "Release\\v142\\hiderun\\x64\\",
             "setoutdirforbuild": false
         }
     ],
-    "archivingdir": "Release\\v120_xp\\hiderun",
+    "archivingdir": "Release\\v142\\hiderun",
     "ShouldBeFiles": [
         "hiderun.exe",
         "hiderun.pdb",
-        "history.txt",
-        "msvcp120.dll",
-        "msvcr120.dll",
-        "vccorlib120.dll"
+        "history.txt"
     ],
     "TotalFileCount": "exact",
     "archivedir": "C:/Linkout/",
-    "remotedir": "http://ambiesoft.fam.cx/ffdav/uploads/hiderun/",
-    "remotesha1": "http://ambiesoft.fam.cx/ffdav/uploads/getSha1.php?file=hiderun/{}",
+    "remotedir": "https://ambiesoft.com/ffdav/uploads/hiderun/",
+    "remotesha1": "https://ambiesoft.com/ffdav/uploads/getSha1.php?file=hiderun/{}",
     "ShouldNotBeFiles": [],
     "ShouldBeOneOfThem": [],
     "obtainverfrom": "history.txt",
