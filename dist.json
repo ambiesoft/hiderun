@@ -7,16 +7,16 @@
     "targets": [
         {
             "platform": "Win32",
-            "outdir": "Release\\v142\\hiderun\\x86\\",
+            "outdir": "Release\\v143\\hiderun\\x86\\",
             "setoutdirforbuild": false
         },
         {
             "platform": "x64",
-            "outdir": "Release\\v142\\hiderun\\x64\\",
+            "outdir": "Release\\v143\\hiderun\\x64\\",
             "setoutdirforbuild": false
         }
     ],
-    "archivingdir": "Release\\v142\\hiderun",
+    "archivingdir": "Release\\v143\\hiderun",
     "ShouldBeFiles": [
         "hiderun.exe",
         "hiderun.pdb",

@@ -11,6 +11,8 @@
 #define _countof(a) sizeof(a)/sizeof(a[0])
 #endif
 
+#pragma comment(lib, "Shlwapi.lib")
+
 using namespace Ambiesoft;
 using namespace Ambiesoft::stdosd;
 using namespace std;
@@ -143,7 +145,7 @@ int GetSubsystemFromImage(LPCWSTR pFilePath)
 	if (realPath.empty())
 		realPath = pFilePath;
 
-	CHandle file;
+	CKernelHandle file;
 	DWORD dwCoffHeaderOffset;
 	DWORD dwNewOffset;
 	DWORD dwMoreDosHeader[16];

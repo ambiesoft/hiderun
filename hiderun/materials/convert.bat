@@ -1,0 +1,1 @@
+C:\LegacyPrograms\ImageMagick\convert.exe icon32.png icon.ico

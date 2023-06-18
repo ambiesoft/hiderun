@@ -1,4 +1,8 @@
-﻿2021/07/03 ver1.0.8
+﻿2023/06/18 ver2.0.1
+Upgraded to VS2022
+Change icon
+
+2021/07/03 ver1.0.8
 Add icon and resource version
 
 2021/07/03 ver1.0.7
