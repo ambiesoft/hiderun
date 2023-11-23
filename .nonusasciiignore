@@ -1,0 +1,12 @@
+*.rc
+*.rc2
+*.resx
+*.ico
+*.png
+*.jpg
+*.Designer.cs
+*.def
+*jpn.txt
+*jp.md
+
+webpage/howto.html
