@@ -6,6 +6,7 @@
 #include "../../lsMisc/GetLastErrorString.h"
 #include "../../lsMisc/stdosd/stdosd.h"
 #include "../../lsMisc/CHandle.h"
+#include "../../lsMisc/GetVersionString.h"
 
 #ifndef _countof
 #define _countof(a) sizeof(a)/sizeof(a[0])
@@ -24,8 +25,8 @@ static wstring getHelpString()
 	message += I18N(L"Run console application without showing the console");
 	message += L"\n\n";
 	message += L"ex)\n";
-	message += L"hiderun.exe [/h|/?] [/v] command [args...]";
-
+	message += L"hiderun.exe [/h|/?] [/v] [/w] command [args...]\n\n";
+	message += L"/w Wait for the invoked process\n";
 	return message;
 }
 
@@ -242,8 +243,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPTSTR    lpCmdLine,
 	_In_ int       nCmdShow)
 {
-
-
 	int argc=0;
 	std::unique_ptr<LPWSTR, HLOCAL(__stdcall *)(HLOCAL)>
 		arg(::CommandLineToArgvW(::GetCommandLine(), &argc), ::LocalFree);
@@ -258,6 +257,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	int sleepsec = 0;
+	bool bWaitForProcess = false;
 	wstring laucharg;
 	CCommandLineString cmdline(lpCmdLine);
 	size_t startIndexOfTarget = 0;
@@ -271,7 +271,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		{
 			MessageBox(NULL,
 				getHelpString().c_str(),
-				APPNAME_AND_VERSION,
+				stdFormat(L"%s v%s", APPNAME, GetVersionString(nullptr,3).c_str()).c_str(),
 				MB_ICONINFORMATION);
 			return 0;
 		}
@@ -279,6 +279,10 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		{
 			++startIndexOfTarget;
 			sleepsec = stoi(cmdline.getArg(startIndexOfTarget));
+		}
+		else if (line == L"/w")
+		{
+			bWaitForProcess = true;
 		}
 		else
 		{
@@ -326,24 +330,31 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	int ret=0;
 	DWORD dwLE = 0;
-	if(!CreateProcessCommon(tartgetCommandLine.c_str(),
-		NULL,
-		TRUE,
-		&dwLE,
-		WaitProcess_InputIdle,
-		10*1000))
 	{
-		wstring message;
-		message += L"Failed to launch: \r\n";
-		message += laucharg.c_str();
-		message += L"\r\n\r\n";
-		message += GetLastErrorString(dwLE);
-		
-		MessageBox(NULL, message.c_str(), APPNAME, MB_ICONEXCLAMATION);
+		CKernelHandle process;
+		if (!CreateProcessCommon(tartgetCommandLine.c_str(),
+			NULL,
+			TRUE,
+			&dwLE,
+			WaitProcess_InputIdle,
+			10 * 1000,
+			&process))
+		{
+			wstring message;
+			message += L"Failed to launch: \r\n";
+			message += laucharg.c_str();
+			message += L"\r\n\r\n";
+			message += GetLastErrorString(dwLE);
 
-		return 1;
+			MessageBox(NULL, message.c_str(), APPNAME, MB_ICONEXCLAMATION);
+
+			return 1;
+		}
+
+		if (bWaitForProcess)
+			WaitForSingleObject(process, INFINITE);
 	}
-	
+
 	if (sleepsec > 0)
 		Sleep(sleepsec * 1000);
 
