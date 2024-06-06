@@ -1,4 +1,6 @@
-﻿2023/11/23 ver2.0.2
+﻿Fixed compile errors caused by lsMisc change
+
+2023/11/23 ver2.0.2
 Added an option '/w' to wait for the invoked process
 
 2023/06/18 ver2.0.1

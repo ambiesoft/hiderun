@@ -44,7 +44,7 @@
     <ClCompile Include="..\..\lsMisc\stdosd\stdosd_win.cpp">
       <Filter>02 Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\lsMisc\GetVersionString.cpp">
+    <ClCompile Include="..\..\lsMisc\GetVersionStringFromResource.cpp">
       <Filter>02 Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -76,7 +76,7 @@
     <ClInclude Include="resource.h">
       <Filter>01 Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\lsMisc\GetVersionString.h">
+    <ClInclude Include="..\..\lsMisc\GetVersionStringFromResource.h">
       <Filter>01 Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,7 +6,7 @@
 #include "../../lsMisc/GetLastErrorString.h"
 #include "../../lsMisc/stdosd/stdosd.h"
 #include "../../lsMisc/CHandle.h"
-#include "../../lsMisc/GetVersionString.h"
+#include "../../lsMisc/GetVersionStringFromResource.h"
 
 #ifndef _countof
 #define _countof(a) sizeof(a)/sizeof(a[0])
@@ -22,11 +22,11 @@ static wstring getHelpString()
 {
 	wstring message;
 	message += L"hiderun\n";
-	message += I18N(L"Run console application without showing the console");
+	message += I18N(L"Run a console application without showing the console");
 	message += L"\n\n";
 	message += L"ex)\n";
 	message += L"hiderun.exe [/h|/?] [/v] [/w] command [args...]\n\n";
-	message += L"/w Wait for the invoked process\n";
+	message += L"/w Wait for the invoked process to finish\n";
 	return message;
 }
 
@@ -271,7 +271,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		{
 			MessageBox(NULL,
 				getHelpString().c_str(),
-				stdFormat(L"%s v%s", APPNAME, GetVersionString(nullptr,3).c_str()).c_str(),
+				stdFormat(L"%s v%s", APPNAME, GetVersionStringFromResource(nullptr,3).c_str()).c_str(),
 				MB_ICONINFORMATION);
 			return 0;
 		}
