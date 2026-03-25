@@ -13,3 +13,7 @@
 #define APPNAME TO_LSTR(APPNAME_)
 
 #define I18N(s) (s)
+
+enum {
+	WM_APP_TRAY_NOTIFY = (WM_APP + 1),
+};

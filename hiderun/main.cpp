@@ -7,10 +7,14 @@
 #include "../../lsMisc/stdosd/stdosd.h"
 #include "../../lsMisc/CHandle.h"
 #include "../../lsMisc/GetVersionStringFromResource.h"
+#include "../../lsMisc/trayicon.h"
+#include "../../lsMisc/createsimplewindow.h"
 
 #ifndef _countof
 #define _countof(a) sizeof(a)/sizeof(a[0])
 #endif
+
+#include "resource.h"
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -258,6 +262,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
 	int sleepsec = 0;
 	bool bWaitForProcess = false;
+	bool bShowTrayIcon = false;
 	wstring laucharg;
 	CCommandLineString cmdline(lpCmdLine);
 	size_t startIndexOfTarget = 0;
@@ -283,6 +288,10 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		else if (line == L"/w")
 		{
 			bWaitForProcess = true;
+		}
+		else if (line == L"/i")
+		{
+			bShowTrayIcon = true;
 		}
 		else
 		{
@@ -351,8 +360,28 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			return 1;
 		}
 
+		HICON trayIcon = nullptr;
+		HWND hTrayWnd = nullptr;
+		if (bShowTrayIcon)
+		{
+			trayIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON_MAIN));
+			assert(trayIcon);
+			
+			hTrayWnd = CreateSimpleWindow();
+			assert(hTrayWnd);
+			
+			AddTrayIcon(hTrayWnd, WM_APP_TRAY_NOTIFY, trayIcon, APPNAME);
+		}
+
 		if (bWaitForProcess)
 			WaitForSingleObject(process, INFINITE);
+
+		if (bShowTrayIcon)
+		{
+			RemoveTrayIcon(hTrayWnd, WM_APP_TRAY_NOTIFY);
+			DestroyWindow(hTrayWnd);
+			DestroyIcon(trayIcon);
+		}
 	}
 
 	if (sleepsec > 0)

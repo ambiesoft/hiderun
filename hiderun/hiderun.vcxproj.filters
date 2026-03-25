@@ -47,6 +47,12 @@
     <ClCompile Include="..\..\lsMisc\GetVersionStringFromResource.cpp">
       <Filter>02 Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\lsMisc\TrayIcon.cpp">
+      <Filter>02 Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\lsMisc\CreateSimpleWindow.cpp">
+      <Filter>02 Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -77,6 +83,12 @@
       <Filter>01 Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\lsMisc\GetVersionStringFromResource.h">
+      <Filter>01 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lsMisc\TrayIcon.h">
+      <Filter>01 Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\lsMisc\CreateSimpleWindow.h">
       <Filter>01 Header Files</Filter>
     </ClInclude>
   </ItemGroup>
