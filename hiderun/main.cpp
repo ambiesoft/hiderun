@@ -370,7 +370,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 			hTrayWnd = CreateSimpleWindow();
 			assert(hTrayWnd);
 			
-			AddTrayIcon(hTrayWnd, WM_APP_TRAY_NOTIFY, trayIcon, APPNAME);
+			wstring trayMessage = stdFormat(L"%s (%s)", APPNAME, exe.c_str());
+			AddTrayIcon(hTrayWnd, WM_APP_TRAY_NOTIFY, trayIcon, trayMessage.c_str());
 		}
 
 		if (bWaitForProcess)

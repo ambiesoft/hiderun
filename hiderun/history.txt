@@ -1,4 +1,6 @@
-﻿2026/03/25 ver2.0.3
+﻿Update tray message
+
+2026/03/25 ver2.0.3
 Added an option '/i' to show tray icon while running
 Fixed compile errors caused by lsMisc change
 
